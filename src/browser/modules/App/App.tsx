@@ -65,7 +65,8 @@ import {
   getConnectionState,
   getLastConnectionUpdate,
   getUseDb,
-  isConnected
+  isConnected,
+  isConnectedAuraHost
 } from 'shared/modules/connections/connectionsDuck'
 import {
   findDatabaseByNameOrAlias,
@@ -128,6 +129,7 @@ export function App(props: any) {
             const data = {
               browserVersion: version,
               neo4jEdition: props.edition,
+              connectedTo: props.connectedTo,
               ...originalData
             }
             eventMetricsCallback &&
@@ -320,7 +322,12 @@ const mapStateToProps = (state: GlobalState) => {
     isDatabaseUnavailable,
     telemetrySettings: getTelemetrySettings(state),
     consentBannerShownCount: getConsentBannerShownCount(state),
-    edition: isServerConfigDone(state) ? 'PENDING' : getEdition(state)
+    edition: isServerConfigDone(state) ? 'PENDING' : getEdition(state),
+    connectedTo: isConnected(state)
+      ? isConnectedAuraHost(state)
+        ? 'AURA'
+        : 'OTHER'
+      : 'NOT CONNECTED'
   }
 }
 type DesktopTrackingSettings = {
